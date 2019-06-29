@@ -15,9 +15,12 @@ import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 
 import java.io.IOException;
 
-class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
+// Sources for AsyncTask Testing: http://marksunghunpark.blogspot.com/2015/05/how-to-test-asynctask-in-android.html $ https://stackoverflow.com/questions/2321829/android-asynctask-testing-with-android-test-framework
+
+public class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
     private static MyApi myApiService = null;
     private Context context;
+    private TaskListener taskListener = null;
 
     @Override
     protected String doInBackground(Context... params) {
@@ -44,16 +47,27 @@ class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
             return myApiService.tellJoke().execute().getData();
 
         } catch (IOException e) {
-            return e.getMessage();
+            Log.d("ExceptionCheck :",e.getMessage());
+            return null;
         }
+    }
+
+    public  EndpointsAsyncTask setListener(TaskListener listener) {
+        this.taskListener = listener;
+        return this;
+    }
+
+    public EndpointsAsyncTask(TaskListener listener) {
+        taskListener = listener;
     }
 
     @Override
     protected void onPostExecute(String result) {
-
-        Intent intent = new Intent(context, AndroidActivity.class);
-        intent.putExtra("TestJoke", result);
-        context.startActivity(intent);
+        if (taskListener != null)
+            taskListener.returnJoke(result);
+    }
+    public interface TaskListener {
+        void returnJoke(String result);
     }
 }
 

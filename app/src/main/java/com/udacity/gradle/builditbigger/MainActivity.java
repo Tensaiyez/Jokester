@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.example.androidlibrary.AndroidActivity;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EndpointsAsyncTask.TaskListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +49,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
-        new EndpointsAsyncTask().execute(this);
-        launchAndroidActivity();
+    new EndpointsAsyncTask(this).execute();
+
     }
 
 
+    @Override
+    public void returnJoke(String result) {
+        Intent intent = new Intent(this, AndroidActivity.class);
+        intent.putExtra(AndroidActivity.Test_Joke, result);
+        this.startActivity(intent);
+    }
 }
